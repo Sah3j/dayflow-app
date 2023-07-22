@@ -5,8 +5,21 @@ import DisplayTodayTasks from './DisplayTodayTasks'
 import TomorrowTasks from "./TomorrowTasks"
 import GoalsHistory from "./GoalsHistory"
 import NavBar from './NavBar'
+import { prisma } from "../../server/db";
 
-export default async function UserPage( {userName} ) {
+
+export async function generateStaticParams() {
+  const users = await prisma.user.findMany()
+
+  console.log(users)
+
+  return users.map((user) => ({
+    userName: user.name,
+  }))
+}
+
+export default async function UserPage( {params} ) {
+  const { userName } = params
   const session = await getServerSession(authOptions)
 
   if(!session) {
